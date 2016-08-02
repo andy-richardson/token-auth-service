@@ -14,13 +14,33 @@ const schema = {
     }
 };
 
+/* RELATIONSHIPS */
+const relationships = [
+    {
+        model: userToken.model,
+        objLabel: 'tokens',
+        relName: 'has_token'
+    }
+]
+
+/* COMPOSE RELATIONSHOPS */
+const compose = function(){
+    relationships.forEach(function(rel){
+        AuthUserModel.getModel().compose(
+            rel.model(),
+            rel.objLabel,
+            rel.relName
+        )
+    })
+}
+
 const AuthUserModel = new Model('AuthUser', schema);
 
 module.exports = {
     init: function(db){
         AuthUserModel.init(db);
         userToken.init(db);
-        AuthUserModel.getModel().compose(userToken.model(), 'tokens', 'has_token');
+        compose();
     },
     model: function(){
         return AuthUserModel.getModel();
