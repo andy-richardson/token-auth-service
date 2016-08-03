@@ -3,7 +3,7 @@
 'use strict';
 const model = require('seraph-model');
 
-class Model{
+class ModelHandler{
     constructor(name, schema){
         this.name = name;
         this.schema = schema;
@@ -23,4 +23,4 @@ class Model{
     }
 }
 
-module.exports = Model;
+module.exports = ModelHandler;

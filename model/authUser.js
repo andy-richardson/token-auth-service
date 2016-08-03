@@ -2,6 +2,7 @@
 const Promise = require('bluebird');
 const ModelHandler = require('./ModelHandler');
 const userSession = require('./userSession');
+const token = require('./token');
 
 /* SCHEMA */
 const schema = {
@@ -24,10 +25,10 @@ const relationships = [
     }
 ]
 
-/* COMPOSE RELATIONSHOPS */
+/* COMPOSE RELATIONSHIPS */
 const compose = function(){
     relationships.forEach(function(rel){
-        authUserModel.compose(
+        model.compose(
             rel.model(),
             rel.objLabel,
             rel.relName
@@ -39,45 +40,82 @@ const compose = function(){
 const AuthUserHandler = new ModelHandler('AuthUser', schema);
 var model;
 
-/* MODEL FUNCTIONS */
-const functions = {
-    init: function(db){
-        AuthUserHandler.init(db);
-        userSession.init(db);
+/* INITIALIZE */
+module.exports.init = function(db){
+    AuthUserHandler.init(db);
+    model = Promise.promisifyAll(AuthUserHandler.getModel(), {suffix: 'Prom'});
 
-        model = AuthUserHandler.getModel();
-        compose();
-    },
+    userSession.init(db, model);
+    compose();
+};
 
-    create: function(username, password){
-        return new Promise(function(resolve, reject){
-            // Check if user already exists
-            model.whereProm({
-                username: username
-            })
-            .then(function(nodes){
-                if(nodes.length > 0){
-                    return reject({
-                        status: 422,
-                        message: 'User already exists'
-                    });
-                }
-
-                // Add credentials to database
-                return model.saveProm({
-                    username: username,
-                    password: password
+/* CREATE NEW AUTH USER */
+module.exports.create = function(username, password){
+    return new Promise(function(resolve, reject){
+        // Check if user already exists
+        model.whereProm({
+            username: username
+        })
+        .then(function(nodes){
+            if(nodes.length > 0){
+                return reject({
+                    status: 422,
+                    message: 'User already exists'
                 });
-            })
-            .then(function(data){
-                return resolve(data.id);
-            })
-        });
-    },
+            }
 
-    model: function(){
-        return model;
-    }
+            // Add credentials to database
+            return model.saveProm({
+                username: username,
+                password: password
+            });
+        })
+        .then(function(data){
+            return resolve(data.id);
+        })
+    });
+};
+
+/* CREATE NEW USER SESSION */
+module.exports.createSession = function(username, password){
+    return new Promise(function(fulfill, reject){
+        const credentials = {
+            username: username,
+            password: password
+        };
+
+        // Check credentials
+        return model.whereProm(credentials, {limit:1})
+        .then(function(node){
+            if(!node.length){
+                return reject({
+                    status: 403,
+                    message: 'Username and password do not match'
+                });
+            }
+
+            // Create new session
+            return userSession.create(node[0].id);
+        })
+        .then(function(data){
+            // Create new token using session data
+            return token.create({
+                username: username,
+                sessionId: data.id,
+                exp: data.expiry
+            });
+        })
+        .then(function(data){
+            // return token
+            return fulfill(data);
+        })
+        .catch(function(err){
+            reject(err);
+        })
+    });
+};
+
+/* RETURN MODEL */
+module.exports.model = function(){
+    return model;
 }
-
-module.exports = functions;
