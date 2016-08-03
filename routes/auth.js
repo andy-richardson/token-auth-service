@@ -3,11 +3,12 @@ const Promise =require('bluebird');
 const router = express.Router();
 
 // Model interfaces
-const AuthUser = require('../model/authUser');
+const User = require('../model/user');
+const Token = require('../model/token');
 
 /* REQUEST JWT */
 router.post('/', function(req, res, next){
-    return AuthUser.createSession(req.body.username, req.body.password)
+    return User.createSession(req.body.username, req.body.password)
     .then(function(data){
         res.status(200);
         res.json(data);
@@ -29,7 +30,7 @@ router.patch('/', Token.verify, function(req, res, next){
 
 /* CREATE NEW AUTH USER */
 router.post('/user', function(req, res, next){
-    return AuthUser.create(req.body.username, req.body.password)
+    return User.create(req.body.username, req.body.password)
     .then(function(data){
         res.status(201);
         return res.json({status: 'success'});

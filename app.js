@@ -12,8 +12,8 @@ const database = seraph({
 });
 
 // Create Models
-const UserModel = require('./model/authUser');
-UserModel.init(database);
+const User = require('./model/user');
+User.init(database);
 
 app.use(logger('dev'));
 app.use(bodyParser.json());

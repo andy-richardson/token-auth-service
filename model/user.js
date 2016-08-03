@@ -1,7 +1,7 @@
 'use strict'
 const Promise = require('bluebird');
 const ModelHandler = require('./ModelHandler');
-const userSession = require('./userSession');
+const userSession = require('./session');
 const token = require('./token');
 
 /* SCHEMA */

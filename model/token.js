@@ -1,10 +1,10 @@
 const Promise = require('bluebird');
-const crypto = require('crypto');
 const jwt = Promise.promisifyAll(require('jsonwebtoken'), {suffix: 'Prom'});
 const config = require('../private/config');
 
 /* VERIFY TOKEN STATE */
 module.exports.verify = function(req, res, next){
+    return next();
     const accessToken = (req.headers.accesstoken != undefined) ? req.headers.accesstoken : req.body.token;
 
     return jwt.verifyProm(accessToken, config.jwt.secret)
