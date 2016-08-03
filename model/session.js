@@ -29,7 +29,7 @@ module.exports.create = function(userId){
 /* VALIDATE USER SESSION */
 module.exports.validate = function(username, sessionId){
     return new Promise(function(fulfill, reject){
-        userModel.whereProm({username: username}, {limit: 1})
+        return userModel.whereProm({username: username}, {limit: 1})
         .then(function(data){
             const sessions = data[0].sessions;
 
@@ -42,20 +42,22 @@ module.exports.validate = function(username, sessionId){
             else if(!Array.isArray(sessions)){
                 return fulfill(sessions.id == sessionId);
             }
-
             // Many sessions found
             else{
-                sessions.forEach(function(session){
-                    if(session.id == sessionId){
-                        return fulfill(true);
+                var found = false;
+                for(var x in sessions){
+                    if(sessions[x].id == sessionId){
+                        found = true;
+                        break;
                     }
-                    return fulfill(false);
-                })
+                }
+
+                return fulfill(found);
             }
         })
         .catch(function(err){
             reject(err);
-        })
+        });
     })
 };
 
