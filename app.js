@@ -4,12 +4,9 @@ const bodyParser = require('body-parser');
 const seraph = require('seraph');
 
 const app = express();
+const config = require('./private/config');
 
-const database = seraph({
-    user: 'neo4j',
-    pass: 'password',
-    server: 'http://neo4j-dev:7474'
-});
+const database = seraph(config.database);
 
 // Create Models
 const User = require('./model/user');
