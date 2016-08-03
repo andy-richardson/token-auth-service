@@ -18,6 +18,18 @@ module.exports.verify = function(req, res, next){
     });
 };
 
+module.exports.decrypt = function(token){
+    return new Promise(function(fulfill, reject){
+        return jwt.verifyProm(token, config.jwt.secret)
+        .then(function(data){
+            return fulfill(data);
+        })
+        .catch(function(err){
+            return reject(err);
+        })
+    })
+}
+
 /* CREATE NEW TOKEN */
 module.exports.create = function(data){
     return new Promise(function(fulfill, reject){

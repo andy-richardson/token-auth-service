@@ -115,6 +115,11 @@ module.exports.createSession = function(username, password){
     });
 };
 
+/* VALIDATE USER SESSION */
+module.exports.validateSession = function(username, sessionId){
+    return userSession.validate(username, sessionId)
+};
+
 /* RETURN MODEL */
 module.exports.model = function(){
     return model;

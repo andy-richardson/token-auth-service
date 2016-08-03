@@ -20,12 +20,27 @@ router.post('/', function(req, res, next){
 
 /* TODO GET NEW JWT */
 router.patch('/', Token.verify, function(req, res, next){
-    const data = req.decoded;
-    // data.tokenId = data.iat = data.exp = undefined;
-    //
-    // const token = Token.create(data);
-    //
-    // res.json({token: token});
+
+});
+
+/* CHECK TOKEN IS VALID */
+router.get('/', function(req, res, next){
+    return Token.decrypt(req.query.token)
+    .then(function(data){
+        return User.validateSession(data.username, data.sessionId);
+    })
+    .then(function(valid){
+        res.status(200);
+
+        if(valid){
+            return res.json({status: 1});
+        }
+        return res.json({status: 0});
+    })
+    .catch(function(err){
+        res.status(500);
+        res.json(err);
+    })
 })
 
 /* CREATE NEW AUTH USER */
