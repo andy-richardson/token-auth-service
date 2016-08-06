@@ -1,4 +1,5 @@
 'use strict'
+const Promise = require('bluebird');
 const ModelHandler = require('./ModelHandler');
 const moment = require('moment');
 
@@ -11,13 +12,14 @@ const schema = {
 };
 
 const UserSessionHandler = new ModelHandler('UserSession', schema);
-var model, userModel;
+var database, model, userModel;
 
 /* INITIALIZE */
 module.exports.init = function(db, uModel){
     UserSessionHandler.init(db);
-    model = UserSessionHandler.getModel();
+    model = Promise.promisifyAll(UserSessionHandler.getModel(), {suffix: 'Prom'});
     userModel = uModel;
+    database = Promise.promisifyAll(db, {suffix: 'Prom'});
 };
 
 /* CREATE NEW USER SESSION */
@@ -60,6 +62,11 @@ module.exports.validate = function(username, sessionId){
         });
     })
 };
+
+/* DELETE USER SESSION */
+module.exports.delete = function(sessionId){
+    return database.deleteProm({id: sessionId}, true)
+}
 
 /* RETURN MODEL */
 module.exports.model = function(){

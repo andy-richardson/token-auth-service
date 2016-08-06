@@ -123,6 +123,11 @@ module.exports.validateSession = function(username, sessionId){
     return userSession.validate(username, sessionId);
 };
 
+/* DELETE USER SESSION */
+module.exports.deleteSession = function(sessionId){
+    return userSession.delete(sessionId);
+}
+
 /* RETURN MODEL */
 module.exports.model = function(){
     return model;

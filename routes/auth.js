@@ -73,6 +73,18 @@ router.get('/', function(req, res, next){
     })
 })
 
+/* DELETE USER SESSION */
+router.delete('/', validateToken, function(req, res, next){
+    return User.deleteSession(req.token.sessionId)
+    .then(function(data){
+        res.status(200);
+        return res.json({status: 'success'});
+    })
+    .catch(function(err){
+        return next(err);
+    })
+})
+
 /* CREATE NEW AUTH USER */
 router.post('/user', function(req, res, next){
     return User.create(req.body.username, req.body.password)
