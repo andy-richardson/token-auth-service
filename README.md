@@ -18,6 +18,9 @@ Users and sessions are stored in a Neo4j database. As of present, expired sessio
 Sessions have been abstracted from the API for simplicity. Tokens are seen as being either _valid_, _invalid_, _blacklisted_ or
 _expired_.
 
+### Configuration
+See _private/config.js_ to configure JSON web token and Neo4j settings.
+
 
 # API FUNCTIONS
 
