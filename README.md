@@ -3,22 +3,21 @@ A microservice for session based authentication using JSON web tokens and a Neo4
 
 ### Intended usage
 
-This service is intended to be accessed by the API to authenticate RESTless API requests. It is advised that you run this inside 
+This service is intended to be accessed by the API to authenticate RESTless API requests. It is advised that you run this inside
 a docker container (or similar) to control access. **Do not run this API publicly**.
+
+To effectively use this microservice, ensure your API does the following:
+
+ * Call 'verify token' before allowing privileged API functionality
+ * Check token expiry and 'PATCH' token if expiry date is nearing
+ * Invalidate token when user logs out
 
 ### User and session tracking
 
 Users and sessions are stored in a Neo4j database. As of present, expired sessions are not automatically deleted from the database.
-Sessions have been abstracted from the API for simplicity. Tokens are seen as being either _valid_, _invalid_, _blacklisted_ or 
+Sessions have been abstracted from the API for simplicity. Tokens are seen as being either _valid_, _invalid_, _blacklisted_ or
 _expired_.
 
-### Effective use
-
-To effectively use this microservice, ensure your API does the following:
-
- * Validate token before allowing privileged API functionality
- * Check token expiry and 'PATCH' token if expiry date is nearing
- * Invalidate token when user logs out
 
 # API FUNCTIONS
 
