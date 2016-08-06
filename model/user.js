@@ -23,7 +23,7 @@ const relationships = [
         objLabel: 'sessions',
         relName: 'has_session'
     }
-]
+];
 
 /* COMPOSE RELATIONSHIPS */
 const compose = function(){
@@ -34,7 +34,7 @@ const compose = function(){
             rel.relName
         )
     })
-}
+};
 
 /* CREATE INSTANCE OF MODEL */
 const AuthUserHandler = new ModelHandler('AuthUser', schema);
@@ -72,7 +72,7 @@ module.exports.create = function(username, password){
         })
         .then(function(data){
             return resolve(data.id);
-        })
+        });
     });
 };
 
@@ -114,7 +114,7 @@ module.exports.createSession = function(username, password){
         })
         .catch(function(err){
             return reject(err);
-        })
+        });
     });
 };
 
@@ -126,9 +126,9 @@ module.exports.validateSession = function(username, sessionId){
 /* DELETE USER SESSION */
 module.exports.deleteSession = function(sessionId){
     return session.delete(sessionId);
-}
+};
 
 /* RETURN MODEL */
 module.exports.model = function(){
     return model;
-}
+};

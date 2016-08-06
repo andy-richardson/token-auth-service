@@ -27,7 +27,7 @@ module.exports.init = function(db, uModel){
 module.exports.create = function(userId){
     const exp = config.jwt.expiry;
     const expiry = moment().add(exp.num, exp.unit).unix();
-    return userModel.pushProm(userId, 'sessions', {expiry: expiry})
+    return userModel.pushProm(userId, 'sessions', {expiry: expiry});
 };
 
 /* VALIDATE USER SESSION */
@@ -62,15 +62,15 @@ module.exports.validate = function(username, sessionId){
         .catch(function(err){
             reject(err);
         });
-    })
+    });
 };
 
 /* DELETE USER SESSION */
 module.exports.delete = function(sessionId){
-    return database.deleteProm({id: sessionId}, true)
-}
+    return database.deleteProm({id: sessionId}, true);
+};
 
 /* RETURN MODEL */
 module.exports.model = function(){
     return model;
-}
+};

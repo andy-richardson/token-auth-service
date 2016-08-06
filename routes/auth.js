@@ -39,8 +39,8 @@ router.post('/', function(req, res, next){
     })
     .catch(function(err){
         next(err);
-    })
-})
+    });
+});
 
 /* REQUEST NEW JWT */
 router.patch('/', validateToken, function(req, res, next){
@@ -70,8 +70,8 @@ router.get('/', function(req, res, next){
     })
     .catch(function(err){
         next(err);
-    })
-})
+    });
+});
 
 /* DELETE USER SESSION */
 router.delete('/', validateToken, function(req, res, next){
@@ -82,8 +82,8 @@ router.delete('/', validateToken, function(req, res, next){
     })
     .catch(function(err){
         return next(err);
-    })
-})
+    });
+});
 
 /* CREATE NEW AUTH USER */
 router.post('/user', function(req, res, next){
@@ -94,7 +94,7 @@ router.post('/user', function(req, res, next){
     })
     .catch(function(err){
         next(err);
-    })
-})
+    });
+});
 
 module.exports = router;

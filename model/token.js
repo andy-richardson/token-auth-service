@@ -12,8 +12,8 @@ module.exports.decrypt = function(token){
         .catch(function(err){
             return reject(err);
         })
-    })
-}
+    });
+};
 
 /* CREATE NEW TOKEN */
 module.exports.create = function(data){
@@ -26,4 +26,4 @@ module.exports.create = function(data){
             token: token
         });
     });
-}
+};
