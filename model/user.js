@@ -80,9 +80,12 @@ module.exports.create = function(username, password){
 module.exports.createSession = function(username, password){
     return new Promise(function(fulfill, reject){
         const credentials = {
-            username: username,
-            password: password
+            username: username
         };
+
+        if(password != undefined){
+            credentials.password = password;
+        }
 
         // Check credentials
         return model.whereProm(credentials, {limit:1})
@@ -110,14 +113,14 @@ module.exports.createSession = function(username, password){
             return fulfill(data);
         })
         .catch(function(err){
-            reject(err);
+            return reject(err);
         })
     });
 };
 
 /* VALIDATE USER SESSION */
 module.exports.validateSession = function(username, sessionId){
-    return userSession.validate(username, sessionId)
+    return userSession.validate(username, sessionId);
 };
 
 /* RETURN MODEL */
