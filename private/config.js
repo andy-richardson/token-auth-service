@@ -1,6 +1,10 @@
 const config = {
     jwt: {
-        secret: '1234'
+        secret: '1234',
+        expiry: {
+            num: 10,
+            unit: 'days'
+        }
     },
     database: {
         user: 'neo4j',

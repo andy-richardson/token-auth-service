@@ -2,6 +2,7 @@
 const Promise = require('bluebird');
 const ModelHandler = require('./ModelHandler');
 const moment = require('moment');
+const config = require('../private/config');
 
 /* SCHEMA */
 const schema = {
@@ -24,7 +25,8 @@ module.exports.init = function(db, uModel){
 
 /* CREATE NEW USER SESSION */
 module.exports.create = function(userId){
-    const expiry = moment().add(6, 'days').unix();
+    const exp = config.jwt.expiry;
+    const expiry = moment().add(exp.num, exp.unit).unix();
     return userModel.pushProm(userId, 'sessions', {expiry: expiry})
 };
 
