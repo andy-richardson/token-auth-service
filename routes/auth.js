@@ -6,6 +6,30 @@ const router = express.Router();
 const User = require('../model/user');
 const Token = require('../model/token');
 
+/* CHECK TOKEN IS VALID -- MIDDLEWARE */
+const validateToken = function(req, res, next){
+    return Token.decrypt(req.body.token)
+    .then(function(token){
+        req.token = token;
+        return User.validateSession(token.username, token.sessionId);
+    })
+    .then(function(valid){
+        if(!valid){
+            throw {
+                err: {
+                    status: 403,
+                    message: "token is blacklisted"
+                }
+            }
+        }
+
+        return next();
+    })
+    .catch(function(err){
+        return next(err);
+    })
+}
+
 /* REQUEST JWT */
 router.post('/', function(req, res, next){
     return User.createSession(req.body.username, req.body.password)
@@ -18,16 +42,23 @@ router.post('/', function(req, res, next){
     })
 })
 
-/* TODO GET NEW JWT */
-router.patch('/', Token.verify, function(req, res, next){
-
+/* REQUEST NEW JWT */
+router.patch('/', validateToken, function(req, res, next){
+    return User.createSession(req.token.username)
+    .then(function(token){
+        res.status(200);
+        return res.json(token);
+    })
+    .catch(function(err){
+        return next(err);
+    });
 });
 
 /* CHECK TOKEN IS VALID */
 router.get('/', function(req, res, next){
     return Token.decrypt(req.query.token)
-    .then(function(data){
-        return User.validateSession(data.username, data.sessionId);
+    .then(function(token){
+        return User.validateSession(token.username, token.sessionId);
     })
     .then(function(valid){
         res.status(200);
@@ -38,8 +69,7 @@ router.get('/', function(req, res, next){
         return res.json({status: 0});
     })
     .catch(function(err){
-        res.status(500);
-        res.json(err);
+        next(err);
     })
 })
 
