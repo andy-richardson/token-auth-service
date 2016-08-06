@@ -1,7 +1,7 @@
 'use strict'
 const Promise = require('bluebird');
 const ModelHandler = require('./ModelHandler');
-const userSession = require('./session');
+const session = require('./session');
 const token = require('./token');
 
 /* SCHEMA */
@@ -19,7 +19,7 @@ const schema = {
 /* RELATIONSHIPS */
 const relationships = [
     {
-        model: userSession.model,
+        model: session.model,
         objLabel: 'sessions',
         relName: 'has_session'
     }
@@ -45,7 +45,7 @@ module.exports.init = function(db){
     AuthUserHandler.init(db);
     model = Promise.promisifyAll(AuthUserHandler.getModel(), {suffix: 'Prom'});
 
-    userSession.init(db, model);
+    session.init(db, model);
     compose();
 };
 
@@ -98,7 +98,7 @@ module.exports.createSession = function(username, password){
             }
 
             // Create new session
-            return userSession.create(node[0].id);
+            return session.create(node[0].id);
         })
         .then(function(data){
             // Create new token using session data
@@ -120,12 +120,12 @@ module.exports.createSession = function(username, password){
 
 /* VALIDATE USER SESSION */
 module.exports.validateSession = function(username, sessionId){
-    return userSession.validate(username, sessionId);
+    return session.validate(username, sessionId);
 };
 
 /* DELETE USER SESSION */
 module.exports.deleteSession = function(sessionId){
-    return userSession.delete(sessionId);
+    return session.delete(sessionId);
 }
 
 /* RETURN MODEL */
