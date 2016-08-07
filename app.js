@@ -23,11 +23,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use('/auth', authRouter);
 
-// catch 404 and forward to error handler
+// 404 Not found
 app.use(function(req, res, next) {
-    var err = new Error('Not Found');
-    err.status = 404;
-    next(err);
+    next({
+        message: "Not found"
+    });
 });
 
 app.use(errorRouter);

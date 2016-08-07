@@ -19,6 +19,10 @@ const errorHandler = function(err, req, res, next){
             error.status = 403;
             break;
 
+        case "Not found":
+            error.status = 404;
+            break;
+
         case "User already exists":
             error.status = 409;
             break;
@@ -29,7 +33,7 @@ const errorHandler = function(err, req, res, next){
     }
 
     console.log(error);
-    
+
     res.status(error.status);
     res.json(error);
 }
