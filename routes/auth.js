@@ -15,18 +15,15 @@ const validateToken = function(req, res, next){
     })
     .then(function(valid){
         if(!valid){
-            throw {
-                err: {
-                    status: 403,
-                    message: "token is blacklisted"
-                }
+                throw {
+                    message: "Token is blacklisted"
             }
         }
 
         return next();
     })
     .catch(function(err){
-        return next(err);
+        next(err);
     })
 }
 
@@ -38,6 +35,11 @@ router.post('/', function(req, res, next){
         res.json(data);
     })
     .catch(function(err){
+        if(err.message = 'Bad credentials'){
+            err.status = 403;
+            return next(err);
+        }
+
         next(err);
     });
 });
@@ -47,10 +49,10 @@ router.patch('/', validateToken, function(req, res, next){
     return User.createSession(req.token.username)
     .then(function(token){
         res.status(200);
-        return res.json(token);
+        res.json(token);
     })
     .catch(function(err){
-        return next(err);
+        next(err);
     });
 });
 
@@ -66,7 +68,8 @@ router.get('/', function(req, res, next){
         if(valid){
             return res.json({status: 1});
         }
-        return res.json({status: 0});
+
+        res.json({status: 0});
     })
     .catch(function(err){
         next(err);
@@ -78,10 +81,10 @@ router.delete('/', validateToken, function(req, res, next){
     return User.deleteSession(req.token.sessionId)
     .then(function(data){
         res.status(200);
-        return res.json({status: 'success'});
+        res.json({status: 'success'});
     })
     .catch(function(err){
-        return next(err);
+        next(err);
     });
 });
 
@@ -90,7 +93,7 @@ router.post('/user', function(req, res, next){
     return User.create(req.body.username, req.body.password)
     .then(function(data){
         res.status(201);
-        return res.json({status: 'success'});
+        res.json({status: 'success'});
     })
     .catch(function(err){
         next(err);
