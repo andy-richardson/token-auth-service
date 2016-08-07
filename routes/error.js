@@ -28,7 +28,10 @@ const errorHandler = function(err, req, res, next){
             break;
     }
 
-    return next(error);
+    console.log(error);
+    
+    res.status(error.status);
+    res.json(error);
 }
 
 module.exports = errorHandler;
