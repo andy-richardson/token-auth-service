@@ -4,17 +4,19 @@ const ModelHandler = require('./ModelHandler');
 const session = require('./session');
 const token = require('./token');
 
-/* SCHEMA */
 const schema = {
     username: {
         type: String,
-        required: true
+        required: true,
+        min: 4
     },
     password: {
         type: String,
-        required: true
+        required: true,
+        min: 8
     }
 };
+/* SCHEMA */
 
 /* RELATIONSHIPS */
 const relationships = [
@@ -52,14 +54,19 @@ module.exports.init = function(db){
 /* CREATE NEW AUTH USER */
 module.exports.create = function(username, password){
     return new Promise(function(resolve, reject){
-        // Check if user already exists
+        // Ensure username provided
+        if(username == undefined){
+            return reject({
+                message: 'Username validation failed'
+            });
+        }
+
         model.whereProm({
             username: username
         })
         .then(function(nodes){
             if(nodes.length > 0){
                 return reject({
-                    status: 422,
                     message: 'User already exists'
                 });
             }
@@ -72,6 +79,30 @@ module.exports.create = function(username, password){
         })
         .then(function(data){
             return resolve(data.id);
+        })
+        .catch(function(err){
+            // Not validation error
+            if(err.cause == undefined){
+                return reject(err);
+            }
+
+            // Cleaner validation errors
+            const message = err.cause.toString();
+            if(message.includes('validation failed when parsing `username`')){
+                return reject({
+                    message: "Username validation failed"
+                });
+            }
+
+
+            if(message.includes('validation failed when parsing `password`')){
+                return reject({
+                    message: "Password validation failed"
+                });
+            }
+
+            // Unknown validation error - safety
+            return reject(err);
         });
     });
 };
@@ -91,10 +122,9 @@ module.exports.createSession = function(username, password){
         return model.whereProm(credentials, {limit:1})
         .then(function(node){
             if(!node.length){
-                return reject({
-                    status: 403,
-                    message: 'Username and password do not match'
-                });
+                throw {
+                    message: 'Bad credentials'
+                };
             }
 
             // Create new session
@@ -108,9 +138,8 @@ module.exports.createSession = function(username, password){
                 exp: data.expiry
             });
         })
-        .then(function(data){
-            // return token
-            return fulfill(data);
+        .then(function(token){
+            return fulfill(token);
         })
         .catch(function(err){
             return reject(err);
