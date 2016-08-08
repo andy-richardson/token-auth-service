@@ -66,10 +66,10 @@ router.get('/', function(req, res, next){
         res.status(200);
 
         if(valid){
-            return res.json({status: 1});
+            return res.json({valid: 1});
         }
 
-        res.json({status: 0});
+        res.json({valid: 0});
     })
     .catch(function(err){
         next(err);
@@ -93,7 +93,7 @@ router.post('/user', function(req, res, next){
     return User.create(req.body.username, req.body.password)
     .then(function(data){
         res.status(201);
-        res.json({status: 'success'});
+        res.json({message: 'success'});
     })
     .catch(function(err){
         next(err);
