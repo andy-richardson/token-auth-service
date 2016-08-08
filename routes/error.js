@@ -12,6 +12,8 @@ const errorHandler = function(err, req, res, next){
         case "jwt must be provided":
         case "invalid token":
         case "invalid arguments":
+        case "Username validation failed":
+        case "Password validation failed":
             error.status = 400;
             break;
 
@@ -20,6 +22,7 @@ const errorHandler = function(err, req, res, next){
             break;
 
         case "Token is blacklisted":
+        case "Bad credentials":
             error.status = 403;
             break;
 
