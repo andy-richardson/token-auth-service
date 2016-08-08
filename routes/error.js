@@ -1,4 +1,8 @@
 const errorHandler = function(err, req, res, next){
+    if(process.env.NODE_ENV == 'development'){
+        console.log(err);
+    }
+
     const error = {
         message: err.message,
         status: undefined
@@ -31,8 +35,6 @@ const errorHandler = function(err, req, res, next){
             error.status = 500;
             break;
     }
-
-    console.log(error);
 
     res.status(error.status);
     res.json(error);
