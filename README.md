@@ -99,7 +99,7 @@ Required
 
 * Status: `200`
 
-* Message: `success`
+* Message: `Success`
 
 #### Failure responses
 
@@ -112,7 +112,6 @@ or
  * Status: `500`
 
  * Message: `Unknown server error`
-
 
 ---
 
@@ -173,6 +172,7 @@ or
 * Status: `500`
 
 * Message: `Unknown server error`
+
 ---
 
 ## UPDATE TOKEN
