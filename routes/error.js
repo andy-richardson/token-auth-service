@@ -10,14 +10,27 @@ const errorHandler = function(err, req, res, next){
 
     switch (err.message) {
         case "jwt must be provided":
+            error.message = "Token must be provided";
+            error.status = 400;
+            break;
+
         case "invalid token":
+            error.message = "Token is invalid";
+            error.status = 400;
+            break;
+
         case "invalid arguments":
+            error.message = "Invalid arguments";
+            error.status = 400;
+            break;
+
         case "Username validation failed":
         case "Password validation failed":
             error.status = 400;
             break;
 
         case "jwt expired":
+            error.message = "Token is expired"
             error.status = 401;
             break;
 
