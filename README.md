@@ -35,7 +35,7 @@ _Create new user_
 
 #### Method
 
-* `GET`
+* `POST`
 
 #### Parameters
 
@@ -45,12 +45,35 @@ Required
 
 * `password=[String]`
 
-#### Success response
+#### Success responses
 
-* Code: `201`
+* Status: `201`
 
-* Content:
-  * `status=[String]`
+* Message: `Success`
+
+#### Failure responses
+
+* Status: `400`
+
+* Message: `Username validation failed`
+
+or
+
+* Status: `400`
+
+* Message: `Password validation failed`
+
+or
+
+ * Status: `409`
+
+ * Message: `User already exists`
+
+or
+
+ * Status: `500`
+
+ * Message: `Unknown server error`
 
 ---
 
@@ -74,9 +97,22 @@ Required
 
 #### Success Response
 
-* Code: `200`
-* Content:
- * `token=[String]`
+* Status: `200`
+
+* Message: `success`
+
+#### Failure responses
+
+* Status: `403`
+
+* Message: `Bad credentials`
+
+or
+
+ * Status: `500`
+
+ * Message: `Unknown server error`
+
 
 ---
 
@@ -98,10 +134,45 @@ Required
 
 #### Success Response
 
-* Code: `200`
-* Content:
- * `status=[Boolean]`
+* Status: `200`
 
+* Valid: `1`
+
+or
+
+* Status: `200`
+
+* Valid: `0`
+
+#### Failure responses
+
+* Status: `400`
+
+* Message: `Token must be provided`
+
+or
+
+* Status: `400`
+
+* Message: `Token is invalid`
+
+or
+
+* Status: `401`
+
+* Message: `Token is expired`
+
+or
+
+* Status: `403`
+
+* Message: `Token is blacklisted`
+
+or
+
+* Status: `500`
+
+* Message: `Unknown server error`
 ---
 
 ## UPDATE TOKEN
@@ -122,9 +193,39 @@ Required
 
 #### Success Response
 
-* Code: `200`
-* Content:
-  * `token=[String]`
+* Status: `200`
+
+* Token: `[token string]`
+
+#### Failure responses
+
+* Status: `400`
+
+* Message: `Token must be provided`
+
+or
+
+* Status: `400`
+
+* Message: `Token is invalid`
+
+or
+
+* Status: `401`
+
+* Message: `Token is expired`
+
+or
+
+* Status: `403`
+
+* Message: `Token is blacklisted`
+
+or
+
+* Status: `500`
+
+* Message: `Unknown server error`
 
 ---
 
@@ -146,6 +247,37 @@ Required
 
 #### Success Response
 
-* Code: `200`
-* Content:
-  * `status=[String]`
+* Status: `200`
+
+* Message: `Success`
+
+#### Failure responses
+
+* Status: `400`
+
+* Message: `Token must be provided`
+
+or
+
+* Status: `400`
+
+* Message: `Token is invalid`
+
+or
+
+* Status: `401`
+
+* Message: `Token is expired`
+
+or
+
+* Status: `403`
+
+* Message: `Token is blacklisted`
+
+or
+
+
+* Status: `500`
+
+* Message: `Unknown server error`
