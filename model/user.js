@@ -167,7 +167,7 @@ module.exports.validateSession = function(token){
 };
 
 /* DELETE USER SESSION */
-module.exports.deleteSession = function(sessionId){
+module.exports.deleteSession = function(token){
     return Session.validate(token)
     .then(function(data){
         return Session.delete(data.sessionId);
