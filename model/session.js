@@ -1,4 +1,4 @@
-const Promise = require('bluebird');
+const Prom = require('bluebird');
 const moment = require('moment');
 const config = require('../private/config');
 const Token = require('./token');
@@ -18,9 +18,9 @@ var database, model, userModel;
 /* INITIALIZE */
 module.exports.init = function(db, uModel){
     UserSessionHandler.init(db);
-    model = Promise.promisifyAll(UserSessionHandler.getModel(), {suffix: 'Prom'});
+    model = Prom.promisifyAll(UserSessionHandler.getModel(), {suffix: 'Prom'});
     userModel = uModel;
-    database = Promise.promisifyAll(db, {suffix: 'Prom'});
+    database = Prom.promisifyAll(db, {suffix: 'Prom'});
 };
 
 /* CREATE NEW USER SESSION */

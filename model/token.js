@@ -1,5 +1,5 @@
-const Promise = require('bluebird');
-const jwt = Promise.promisifyAll(require('jsonwebtoken'), {suffix: 'Prom'});
+const Prom = require('bluebird');
+const jwt = Prom.promisifyAll(require('jsonwebtoken'), {suffix: 'Prom'});
 const config = require('../private/config');
 
 /* VERIFY AND DECRYPT TOKEN */

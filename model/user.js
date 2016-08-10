@@ -1,5 +1,5 @@
-const Promise = require('bluebird');
-const bcrypt = Promise.promisifyAll(require('bcrypt'), {suffix: 'Prom'});
+const Prom = require('bluebird');
+const bcrypt = Prom.promisifyAll(require('bcrypt'), {suffix: 'Prom'});
 const config = require('../private/config');
 const ModelHandler = require('./ModelHandler');
 const Session = require('./session');
@@ -56,7 +56,7 @@ var model;
 /* INITIALIZE */
 module.exports.init = function(db){
     AuthUserHandler.init(db);
-    model = Promise.promisifyAll(AuthUserHandler.getModel(), {suffix: 'Prom'});
+    model = Prom.promisifyAll(AuthUserHandler.getModel(), {suffix: 'Prom'});
 
     Session.init(db, model);
     compose();
@@ -64,7 +64,7 @@ module.exports.init = function(db){
 
 /* CREATE NEW AUTH USER */
 module.exports.create = function(username, password){
-    return new Promise(function(resolve, reject){
+    return new Prom(function(resolve, reject){
         // Ensure username provided
         if(username === undefined){
             return reject(new Error('Username validation failed'));
