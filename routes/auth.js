@@ -35,11 +35,6 @@ router.post('/', function(req, res, next){
         res.json(data);
     })
     .catch(function(err){
-        if(err.message = 'Bad credentials'){
-            err.status = 403;
-            return next(err);
-        }
-
         next(err);
     });
 });
