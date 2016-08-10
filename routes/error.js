@@ -36,6 +36,7 @@ const errorHandler = function(err, req, res, next){
 
         case "Token is blacklisted":
         case "Bad credentials":
+        case "User does not exist":
             error.status = 403;
             break;
 

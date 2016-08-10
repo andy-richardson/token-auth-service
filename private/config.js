@@ -10,6 +10,9 @@ const config = {
         user: 'neo4j',
         pass: 'password',
         server: 'http://neo4j-dev:7474'
+    },
+    encryption: {
+        saltRounds: 10
     }
 };
 

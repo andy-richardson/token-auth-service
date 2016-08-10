@@ -1,22 +1,32 @@
 'use strict'
 const Promise = require('bluebird');
+const bcrypt = Promise.promisifyAll(require('bcrypt'), {suffix: 'Prom'});
+const config = require('../private/config');
 const ModelHandler = require('./ModelHandler');
 const session = require('./session');
 const token = require('./token');
 
+/* PASSWORD ENCRYPTION */
+const hasher = {
+    encrypt: function(password){
+        return bcrypt.hashProm(password, config.encryption.saltRounds);
+    },
+    compare: function(password, hash){
+        return bcrypt.compareProm(password, hash);
+    }
+}
+
+/* SCHEMA */
 const schema = {
     username: {
         type: String,
-        required: true,
-        min: 4
+        required: true
     },
     password: {
         type: String,
-        required: true,
-        min: 8
+        required: true
     }
 };
-/* SCHEMA */
 
 /* RELATIONSHIPS */
 const relationships = [
@@ -71,10 +81,14 @@ module.exports.create = function(username, password){
                 });
             }
 
+            return hasher.encrypt(password)
+        })
+        .then(function(hash){
             // Add credentials to database
+            console.log(username);
             return model.saveProm({
                 username: username,
-                password: password
+                password: hash
             });
         })
         .then(function(data){
@@ -114,28 +128,40 @@ module.exports.createSession = function(username, password){
             username: username
         };
 
-        if(password != undefined){
-            credentials.password = password;
-        }
-
         // Check credentials
         return model.whereProm(credentials, {limit:1})
         .then(function(node){
             if(!node.length){
                 throw {
-                    message: 'Bad credentials'
+                    message: 'User does not exist'
                 };
             }
 
+            const user = node[0];
+
+            // Password checking
+            if(password != undefined){
+                return hasher.compare(password, user.password)
+                .then(function(valid){
+                    if(!valid){
+                        throw {
+                            message: 'Bad credentials'
+                        };
+                    }
+
+                    return session.create(user.id);
+                });
+            }
+
             // Create new session
-            return session.create(node[0].id);
+            return session.create(user.id);
         })
-        .then(function(data){
+        .then(function(session){
             // Create new token using session data
             return token.create({
                 username: username,
-                sessionId: data.id,
-                exp: data.expiry
+                sessionId: session.id,
+                exp: session.expiry
             });
         })
         .then(function(token){
