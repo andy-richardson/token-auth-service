@@ -46,16 +46,14 @@ module.exports.validate = function(token){
         const sessions = node[0].sessions;
         var valid = false;
 
-        if(Array.isArray(sessions)){
-            for(var pos in sessions){
-                if(sessions[pos].id == tokenData.sessionId){
-                    valid = true;
-                    break;
-                }
+        for(var pos in sessions){
+            if(sessions[pos].id == tokenData.sessionId){
+                valid = true;
+                break;
             }
         }
 
-        if(sessions.id != tokenData.sessionId && !valid){
+        if(sessions == undefined || !valid){
             throw new Error('Token is blacklisted');
         }
 

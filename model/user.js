@@ -33,7 +33,8 @@ const relationships = [
     {
         model: Session.model,
         objLabel: 'sessions',
-        relName: 'has_session'
+        relName: 'has_session',
+        opts: {many: true}
     }
 ];
 
@@ -43,7 +44,8 @@ const compose = function(){
         model.compose(
             rel.model(),
             rel.objLabel,
-            rel.relName
+            rel.relName,
+            rel.opts
         )
     })
 };
