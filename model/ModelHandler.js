@@ -1,5 +1,3 @@
-// WARNING: Currently has redundancy -> copy also on rendo-api
-
 'use strict';
 const model = require('seraph-model');
 

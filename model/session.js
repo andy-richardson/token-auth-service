@@ -1,4 +1,3 @@
-'use strict'
 const Promise = require('bluebird');
 const moment = require('moment');
 const config = require('../private/config');
@@ -39,7 +38,7 @@ module.exports.validate = function(token){
     return Token.decrypt(token)
     .then(function(data){
         tokenData = data;
-        return userModel.whereProm({username: data.username}, {limit: 1})
+        return userModel.whereProm({username: data.username}, {limit: 1});
     })
     .then(function(node){
         // Check token for blacklist
@@ -53,7 +52,7 @@ module.exports.validate = function(token){
             }
         }
 
-        if(sessions == undefined || !valid){
+        if(sessions === undefined || !valid){
             throw new Error('Token is blacklisted');
         }
 

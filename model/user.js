@@ -1,4 +1,3 @@
-'use strict'
 const Promise = require('bluebird');
 const bcrypt = Promise.promisifyAll(require('bcrypt'), {suffix: 'Prom'});
 const config = require('../private/config');
@@ -14,7 +13,7 @@ const hasher = {
     compare: function(password, hash){
         return bcrypt.compareProm(password, hash);
     }
-}
+};
 
 /* SCHEMA */
 const schema = {
@@ -46,8 +45,8 @@ const compose = function(){
             rel.objLabel,
             rel.relName,
             rel.opts
-        )
-    })
+        );
+    });
 };
 
 /* CREATE INSTANCE OF MODEL */
@@ -67,7 +66,7 @@ module.exports.init = function(db){
 module.exports.create = function(username, password){
     return new Promise(function(resolve, reject){
         // Ensure username provided
-        if(username == undefined){
+        if(username === undefined){
             return reject(new Error('Username validation failed'));
         }
 
@@ -79,7 +78,7 @@ module.exports.create = function(username, password){
                 return reject(new Error('User already exists'));
             }
 
-            return hasher.encrypt(password)
+            return hasher.encrypt(password);
         })
         .then(function(hash){
             // Add credentials to database
@@ -120,7 +119,7 @@ module.exports.createSession = function(username, password){
         const user = node[0];
 
         // Password checking
-        if(password != undefined){
+        if(password !== undefined){
             return hasher.compare(password, user.password)
             .then(function(valid){
                 if(!valid){
@@ -149,7 +148,7 @@ module.exports.createSession = function(username, password){
 module.exports.patchSession = function(token){
     return Session.validate(token)
     .then(function(data){
-        return module.exports.createSession(data.username)
+        return module.exports.createSession(data.username);
     });
 };
 

@@ -1,5 +1,5 @@
-const express = require('express');
 const Promise =require('bluebird');
+const express = require('express');
 const router = require('express-promise-router')();
 
 // Model interfaces

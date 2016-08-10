@@ -30,7 +30,7 @@ const errorHandler = function(err, req, res, next){
             break;
 
         case "jwt expired":
-            error.message = "Token is expired"
+            error.message = "Token is expired";
             error.status = 401;
             break;
 
@@ -49,7 +49,7 @@ const errorHandler = function(err, req, res, next){
             break;
 
         default:
-            if(error.status == undefined){
+            if(error.status === undefined){
                 error.status = 500;
             }
             break;
@@ -57,6 +57,6 @@ const errorHandler = function(err, req, res, next){
 
     res.status(error.status);
     res.json(error);
-}
+};
 
 module.exports = errorHandler;
