@@ -8,9 +8,11 @@ a docker container (or similar) to control access. **Do not run this API publicl
 
 To effectively use this microservice, ensure your API does the following:
 
- * Call 'verify token' before allowing privileged API functionality
- * Check token expiry and 'PATCH' token if expiry date is nearing
- * Invalidate token when user logs out
+* Call 'verify token' before allowing privileged API functionality
+
+* Check token expiry and 'PATCH' token if expiry date is nearing
+
+* Invalidate token when user logs out
 
 ### User and session tracking
 
@@ -65,15 +67,15 @@ or
 
 or
 
- * Status: `409`
+* Status: `409`
 
- * Message: `User already exists`
+* Message: `User already exists`
 
 or
 
- * Status: `500`
+* Status: `500`
 
- * Message: `Unknown server error`
+* Message: `Unknown server error`
 
 ---
 
@@ -282,7 +284,6 @@ or
 * Message: `Token is blacklisted`
 
 or
-
 
 * Status: `500`
 
