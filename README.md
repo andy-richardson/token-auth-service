@@ -109,9 +109,15 @@ Required
 
 or
 
- * Status: `500`
+* Status: `403`
 
- * Message: `Unknown server error`
+* Message: `User does not exist`
+
+or
+
+* Status: `500`
+
+* Message: `Unknown server error`
 
 ---
 
