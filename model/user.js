@@ -3,8 +3,8 @@ const Promise = require('bluebird');
 const bcrypt = Promise.promisifyAll(require('bcrypt'), {suffix: 'Prom'});
 const config = require('../private/config');
 const ModelHandler = require('./ModelHandler');
-const session = require('./session');
-const token = require('./token');
+const Session = require('./session');
+const Token = require('./token');
 
 /* PASSWORD ENCRYPTION */
 const hasher = {
@@ -31,7 +31,7 @@ const schema = {
 /* RELATIONSHIPS */
 const relationships = [
     {
-        model: session.model,
+        model: Session.model,
         objLabel: 'sessions',
         relName: 'has_session'
     }
@@ -57,7 +57,7 @@ module.exports.init = function(db){
     AuthUserHandler.init(db);
     model = Promise.promisifyAll(AuthUserHandler.getModel(), {suffix: 'Prom'});
 
-    session.init(db, model);
+    Session.init(db, model);
     compose();
 };
 
@@ -66,9 +66,7 @@ module.exports.create = function(username, password){
     return new Promise(function(resolve, reject){
         // Ensure username provided
         if(username == undefined){
-            return reject({
-                message: 'Username validation failed'
-            });
+            return reject(new Error('Username validation failed'));
         }
 
         model.whereProm({
@@ -76,16 +74,13 @@ module.exports.create = function(username, password){
         })
         .then(function(nodes){
             if(nodes.length > 0){
-                return reject({
-                    message: 'User already exists'
-                });
+                return reject(new Error('User already exists'));
             }
 
             return hasher.encrypt(password)
         })
         .then(function(hash){
             // Add credentials to database
-            console.log(username);
             return model.saveProm({
                 username: username,
                 password: hash
@@ -95,92 +90,87 @@ module.exports.create = function(username, password){
             return resolve(data.id);
         })
         .catch(function(err){
-            // Not validation error
-            if(err.cause == undefined){
-                return reject(err);
-            }
-
             // Cleaner validation errors
-            const message = err.cause.toString();
+            const message = err.message;
             if(message.includes('validation failed when parsing `username`')){
-                return reject({
-                    message: "Username validation failed"
-                });
+                return reject(new Error('Username validation failed'));
             }
 
 
             if(message.includes('validation failed when parsing `password`')){
-                return reject({
-                    message: "Password validation failed"
-                });
+                return reject(new Error('Password validation failed'));
             }
 
             // Unknown validation error - safety
-            return reject(err);
+            reject(err);
         });
     });
 };
 
 /* CREATE NEW USER SESSION */
 module.exports.createSession = function(username, password){
-    return new Promise(function(fulfill, reject){
-        const credentials = {
-            username: username
+    return model.whereProm({username: username}, {limit:1})
+    .then(function(node){
+        if(!node.length){
+            throw new Error('User does not exist');
+        }
+
+        const user = node[0];
+
+        // Password checking
+        if(password != undefined){
+            return hasher.compare(password, user.password)
+            .then(function(valid){
+                if(!valid){
+                    throw new Error('Bad credentials');
+                }
+
+                return Session.create(user.id);
+            });
+        }
+
+        // Create new session
+        return Session.create(user.id);
+    })
+    .then(function(session){
+        const seshData = {
+            username: username,
+            sessionId: session.id,
+            exp: session.expiry
         };
 
-        // Check credentials
-        return model.whereProm(credentials, {limit:1})
-        .then(function(node){
-            if(!node.length){
-                throw {
-                    message: 'User does not exist'
-                };
-            }
+        return Token.create(seshData);
+    });
+};
 
-            const user = node[0];
-
-            // Password checking
-            if(password != undefined){
-                return hasher.compare(password, user.password)
-                .then(function(valid){
-                    if(!valid){
-                        throw {
-                            message: 'Bad credentials'
-                        };
-                    }
-
-                    return session.create(user.id);
-                });
-            }
-
-            // Create new session
-            return session.create(user.id);
-        })
-        .then(function(session){
-            // Create new token using session data
-            return token.create({
-                username: username,
-                sessionId: session.id,
-                exp: session.expiry
-            });
-        })
-        .then(function(token){
-            return fulfill(token);
-        })
-        .catch(function(err){
-            return reject(err);
-        });
+/* PATCH USER SESSION */
+module.exports.patchSession = function(token){
+    return Session.validate(token)
+    .then(function(data){
+        return module.exports.createSession(data.username)
     });
 };
 
 /* VALIDATE USER SESSION */
-module.exports.validateSession = function(username, sessionId){
-    return session.validate(username, sessionId);
+module.exports.validateSession = function(token){
+    return Session.validate(token)
+    .then(function(data){
+        return true;
+    })
+    .catch(function(err){
+        if(process.env.NODE_ENV == 'development'){
+            console.log(err);
+        }
+        return false;
+    });
 };
 
 /* DELETE USER SESSION */
 module.exports.deleteSession = function(sessionId){
-    return session.delete(sessionId);
+    return Session.validate(token)
+    .then(function(data){
+        return Session.delete(data.sessionId);
+    });
 };
 
 /* RETURN MODEL */

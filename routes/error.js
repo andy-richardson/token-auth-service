@@ -5,10 +5,10 @@ const errorHandler = function(err, req, res, next){
 
     const error = {
         message: err.message,
-        status: undefined
+        status: err.status
     };
 
-    switch (err.message) {
+    switch (error.message) {
         case "jwt must be provided":
             error.message = "Token must be provided";
             error.status = 400;
@@ -49,7 +49,9 @@ const errorHandler = function(err, req, res, next){
             break;
 
         default:
-            error.status = 500;
+            if(error.status == undefined){
+                error.status = 500;
+            }
             break;
     }
 

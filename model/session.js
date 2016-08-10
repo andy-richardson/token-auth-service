@@ -1,8 +1,9 @@
 'use strict'
 const Promise = require('bluebird');
-const ModelHandler = require('./ModelHandler');
 const moment = require('moment');
 const config = require('../private/config');
+const Token = require('./token');
+const ModelHandler = require('./ModelHandler');
 
 /* SCHEMA */
 const schema = {
@@ -31,37 +32,34 @@ module.exports.create = function(userId){
 };
 
 /* VALIDATE USER SESSION */
-module.exports.validate = function(username, sessionId){
-    return new Promise(function(fulfill, reject){
-        return userModel.whereProm({username: username}, {limit: 1})
-        .then(function(data){
-            const sessions = data[0].sessions;
+module.exports.validate = function(token){
+    // Returns error or decrypted token
+    var tokenData;
 
-            // No sessions found
-            if(sessions == undefined){
-                return fulfill(false);
-            }
+    return Token.decrypt(token)
+    .then(function(data){
+        tokenData = data;
+        return userModel.whereProm({username: data.username}, {limit: 1})
+    })
+    .then(function(node){
+        // Check token for blacklist
+        const sessions = node[0].sessions;
+        var valid = false;
 
-            // One session found
-            else if(!Array.isArray(sessions)){
-                return fulfill(sessions.id == sessionId);
-            }
-            // Many sessions found
-            else{
-                var found = false;
-                for(var x in sessions){
-                    if(sessions[x].id == sessionId){
-                        found = true;
-                        break;
-                    }
+        if(Array.isArray(sessions)){
+            for(var pos in sessions){
+                if(sessions[pos].id == tokenData.sessionId){
+                    valid = true;
+                    break;
                 }
-
-                return fulfill(found);
             }
-        })
-        .catch(function(err){
-            reject(err);
-        });
+        }
+
+        if(sessions.id != tokenData.sessionId && !valid){
+            throw new Error('Token is blacklisted');
+        }
+
+        return tokenData;
     });
 };
 
