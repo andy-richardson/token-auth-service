@@ -105,15 +105,15 @@ Required
 
 #### Failure responses
 
-* Status: `403`
+* Status: `400`
 
-* Message: `Bad credentials`
+* Message: `User does not exist`
 
 or
 
-* Status: `403`
+* Status: `401`
 
-* Message: `User does not exist`
+* Message: `Bad credentials`
 
 or
 
@@ -171,7 +171,7 @@ or
 
 or
 
-* Status: `403`
+* Status: `401`
 
 * Message: `Token is blacklisted`
 
@@ -225,7 +225,7 @@ or
 
 or
 
-* Status: `403`
+* Status: `401`
 
 * Message: `Token is blacklisted`
 
@@ -279,7 +279,7 @@ or
 
 or
 
-* Status: `403`
+* Status: `401`
 
 * Message: `Token is blacklisted`
 

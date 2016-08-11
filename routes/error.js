@@ -29,6 +29,10 @@ const errorHandler = function(err, req, res, next){
             error.status = 400;
             break;
 
+        case "User does not exist":
+            error.status = 400;
+            break;
+
         case "jwt expired":
             error.message = "Token is expired";
             error.status = 401;
@@ -36,8 +40,7 @@ const errorHandler = function(err, req, res, next){
 
         case "Token is blacklisted":
         case "Bad credentials":
-        case "User does not exist":
-            error.status = 403;
+            error.status = 401;
             break;
 
         case "Not found":
