@@ -156,13 +156,7 @@ module.exports.patchSession = function(token){
 module.exports.validateSession = function(token){
     return Session.validate(token)
     .then(function(data){
-        return true;
-    })
-    .catch(function(err){
-        if(process.env.NODE_ENV == 'development'){
-            console.log(err);
-        }
-        return false;
+        return data.username;
     });
 };
 

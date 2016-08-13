@@ -26,9 +26,9 @@ router.patch('/', function(req, res, next){
 /* CHECK TOKEN IS VALID */
 router.get('/', function(req, res, next){
     return User.validateSession(req.query.token)
-    .then(function(valid){
+    .then(function(username){
         res.status(200);
-        res.json({valid: valid});
+        res.json({username: username});
     });
 });
 
