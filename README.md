@@ -29,7 +29,7 @@ See _private/config.js_ to configure JSON web token and Neo4j settings.
 
 ## CREATE USER
 
-_Create new user_
+_Create a new user for authentication purposes._
 
 #### Url
 
@@ -80,7 +80,7 @@ or
 ---
 
 ## CREATE TOKEN
-_Create and return token_
+_Validate user credentials and return token._
 
 #### Url
 
@@ -124,7 +124,7 @@ or
 ---
 
 ## VERIFY TOKEN
-_Verify token is valid_
+_Verify token is valid and, if so, return username of token owner._
 
 #### Url
 
@@ -143,13 +143,7 @@ Required
 
 * Status: `200`
 
-* Valid: `1`
-
-or
-
-* Status: `200`
-
-* Valid: `0`
+* Username: `[username]`
 
 #### Failure responses
 
