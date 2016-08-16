@@ -23,14 +23,14 @@ module.exports.init = function(db, uModel){
     database = Prom.promisifyAll(db, {suffix: 'Prom'});
 };
 
-/* CREATE NEW USER SESSION */
+/* CREATE NEW SESSION */
 module.exports.create = function(userId){
     const exp = config.jwt.expiry;
     const expiry = moment().add(exp.num, exp.unit).unix();
     return userModel.pushProm(userId, 'sessions', {expiry: expiry});
 };
 
-/* VALIDATE USER SESSION */
+/* VALIDATE SESSION */
 module.exports.validate = function(token){
     // Returns error or decrypted token
     var tokenData;
@@ -60,7 +60,7 @@ module.exports.validate = function(token){
     });
 };
 
-/* DELETE USER SESSION */
+/* DELETE SESSION */
 module.exports.delete = function(sessionId){
     return database.deleteProm({id: sessionId}, true);
 };

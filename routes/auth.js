@@ -32,7 +32,7 @@ router.get('/', function(req, res, next){
     });
 });
 
-/* DELETE USER SESSION */
+/* DELETE SESSION */
 router.delete('/', function(req, res, next){
     return User.deleteSession(req.body.token)
     .then(function(data){
@@ -44,6 +44,15 @@ router.delete('/', function(req, res, next){
 /* CREATE NEW AUTH USER */
 router.post('/user', function(req, res, next){
     return User.create(req.body.username, req.body.password)
+    .then(function(data){
+        res.status(201);
+        res.json({message: 'success'});
+    });
+});
+
+/* CHANGE AUTH USER PASSWORD */
+router.patch('/user', function(req, res, next){
+    return User.setPassword(req.body.username, req.body.password)
     .then(function(data){
         res.status(201);
         res.json({message: 'success'});

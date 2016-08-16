@@ -79,6 +79,52 @@ or
 
 ---
 
+## CHANGE USER PASSWORD
+
+_Change the password of an existing user._
+
+#### Url
+
+* `/auth/user`
+
+#### Method
+
+* `PATCH`
+
+#### Parameters
+
+Required
+
+* `username=[String]`
+
+* `password=[String]`
+
+#### Success responses
+
+* Status: `201`
+
+* Message: `Success`
+
+#### Failure responses
+
+* Status: `400`
+
+* Message: `Username validation failed`
+
+or
+
+* Status: `400`
+
+* Message: `Password validation failed`
+
+or
+
+* Status: `500`
+
+* Message: `Unknown server error`
+
+---
+
 ## CREATE TOKEN
 _Validate user credentials and return token._
 

@@ -1,3 +1,4 @@
+'use strict';
 const Prom = require('bluebird');
 const bcrypt = Prom.promisifyAll(require('bcrypt'), {suffix: 'Prom'});
 const config = require('../private/config');
@@ -19,6 +20,7 @@ const hasher = {
 const schema = {
     username: {
         type: String,
+        lowercase: true,
         required: true
     },
     password: {
@@ -51,7 +53,7 @@ const compose = function(){
 
 /* CREATE INSTANCE OF MODEL */
 const AuthUserHandler = new ModelHandler('AuthUser', schema);
-var model;
+let database, model;
 
 /* INITIALIZE */
 module.exports.init = function(db){
@@ -60,6 +62,8 @@ module.exports.init = function(db){
 
     Session.init(db, model);
     compose();
+    database = db;
+    database.rel.delete = Prom.promisify(database.rel.delete);
 };
 
 /* CREATE NEW AUTH USER */
@@ -108,7 +112,7 @@ module.exports.create = function(username, password){
     });
 };
 
-/* CREATE NEW USER SESSION */
+/* CREATE NEW SESSION */
 module.exports.createSession = function(username, password){
     return model.whereProm({username: username}, {limit:1})
     .then(function(node){
@@ -144,7 +148,7 @@ module.exports.createSession = function(username, password){
     });
 };
 
-/* PATCH USER SESSION */
+/* PATCH SESSION */
 module.exports.patchSession = function(token){
     return Session.validate(token)
     .then(function(data){
@@ -152,7 +156,7 @@ module.exports.patchSession = function(token){
     });
 };
 
-/* VALIDATE USER SESSION */
+/* VALIDATE SESSION */
 module.exports.validateSession = function(token){
     return Session.validate(token)
     .then(function(data){
@@ -160,11 +164,53 @@ module.exports.validateSession = function(token){
     });
 };
 
-/* DELETE USER SESSION */
+/* DELETE SESSION */
 module.exports.deleteSession = function(token){
     return Session.validate(token)
     .then(function(data){
         return Session.delete(data.sessionId);
+    });
+};
+
+/* DELETE ALL SESSIONS */
+module.exports.deleteAllSessions = function(username){
+    return model.whereProm({username: username}, {limit:1})
+    .then(function(node){
+        const user = node[0];
+
+        if(user.sessions !== undefined){
+            let proms = [];
+
+            user.sessions.forEach(function(obj){
+                proms.push(Session.delete(obj.id));
+            });
+
+            return Prom.all(proms);
+        }
+    });
+};
+
+/* SET PASSWORD */
+module.exports.setPassword = function(username, password){
+    let user;
+
+    return model.whereProm({username: username}, {limit: 1})
+    .then(function(node){
+        user = node[0];
+        if(user === undefined){
+            throw new Error('Username validation failed');
+        }
+
+        const async = [
+            hasher.encrypt(password),
+            module.exports.deleteAllSessions(username)
+        ];
+
+        return Prom.all(async);
+    })
+    .then(function(data){
+        user.password = data[0];
+        return model.update(user);
     });
 };
 
