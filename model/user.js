@@ -61,7 +61,7 @@ module.exports.create = function(username, password){
     return new Prom(function(resolve, reject){
         // Ensure username provided
         if(username === undefined){
-            return reject(new Error('Username validation failed'));
+            throw new Error('Username validation failed');
         }
 
         model.whereProm({
@@ -69,7 +69,7 @@ module.exports.create = function(username, password){
         })
         .then(function(nodes){
             if(nodes.length > 0){
-                return reject(new Error('User already exists'));
+                throw new Error('User already exists');
             }
 
             return hasher.encrypt(password);
@@ -91,12 +91,10 @@ module.exports.create = function(username, password){
                 return reject(new Error('Username validation failed'));
             }
 
-
             if(message.includes('validation failed when parsing `password`')){
                 return reject(new Error('Password validation failed'));
             }
 
-            // Unknown validation error - safety
             reject(err);
         });
     });
