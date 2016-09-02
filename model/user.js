@@ -39,20 +39,8 @@ const relationships = [
     }
 ];
 
-/* COMPOSE RELATIONSHIPS */
-const compose = function(){
-    relationships.forEach(function(rel){
-        model.compose(
-            rel.model(),
-            rel.objLabel,
-            rel.relName,
-            rel.opts
-        );
-    });
-};
-
 /* CREATE INSTANCE OF MODEL */
-const AuthUserHandler = new ModelHandler('AuthUser', schema);
+const AuthUserHandler = new ModelHandler('AuthUser', schema, relationships);
 let database, model;
 
 /* INITIALIZE */
@@ -60,8 +48,10 @@ module.exports.init = function(db){
     AuthUserHandler.init(db);
     model = Prom.promisifyAll(AuthUserHandler.getModel(), {suffix: 'Prom'});
 
+    // Initialize session and compose relationships
     Session.init(db, model);
-    compose();
+    AuthUserHandler.compose();
+
     database = db;
     database.rel.delete = Prom.promisify(database.rel.delete);
 };
@@ -196,7 +186,11 @@ module.exports.setPassword = function(username, password){
 
     return model.whereProm({username: username}, {limit: 1})
     .then(function(node){
-        user = node[0];
+        user = {
+            id: node[0].id,
+            username: node[0].username
+        };
+
         if(user === undefined){
             throw new Error('Username validation failed');
         }
@@ -210,7 +204,7 @@ module.exports.setPassword = function(username, password){
     })
     .then(function(data){
         user.password = data[0];
-        return model.update(user);
+        return model.updateProm(user);
     });
 };
 

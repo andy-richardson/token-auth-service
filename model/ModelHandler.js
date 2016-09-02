@@ -2,14 +2,27 @@
 const model = require('seraph-model');
 
 class ModelHandler{
-    constructor(name, schema){
+    constructor(name, schema, relations){
         this.name = name;
         this.schema = schema;
+        this.relationships = relations;
     }
 
     init(db){
         this.model = model(db, this.name);
-        this.model.schema = this.schema;
+    }
+
+    compose(){
+        if(this.relationships !== undefined){
+            this.relationships.forEach((rel)=>{
+                this.model.compose(
+                    rel.model(),
+                    rel.objLabel,
+                    rel.relName,
+                    rel.opts
+                );
+            });
+        }
     }
 
     getModel(){
